@@ -1,0 +1,361 @@
+```html
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  
+  <!-- Apple PWA Meta Tags -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Consciencia">
+  
+  <title>SubstanceLog - Minimalist Pro</title>
+  
+  <style>
+    :root {
+      --accent:     #ffffff;
+      --accent-dim: rgba(255, 255, 255, 0.1);
+      --bg:         #000000;
+      --bg2:        #0a0a0a;
+      --bg3:        #161616;
+      --card:       #111111;
+      --card2:      #1a1a1a;
+      --text:       #f2f2f2;
+      --muted:      #666666;
+      --muted2:     #333333;
+      --border:     #222222;
+      --success:    #ffffff;
+      --danger:     #ff4444;
+      --nav-w:      60px;
+    }
+
+    * { 
+      margin: 0; padding: 0; box-sizing: border-box; 
+      -webkit-tap-highlight-color: transparent; 
+      -webkit-user-select: none; user-select: none;
+    }
+
+    input, textarea { -webkit-user-select: text; user-select: text; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100dvh;
+      overflow: hidden;
+      overscroll-behavior: none;
+    }
+
+    #app {
+      display: flex;
+      height: 100dvh;
+      /* จัดการระยะห่างสำหรับ Standalone Mode */
+      padding-left: calc(var(--nav-w) + env(safe-area-inset-left));
+      padding-top: env(safe-area-inset-top);
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+
+    /* ── DOCK ── */
+    nav.dock {
+      position: fixed; left: 0; top: 0; bottom: 0;
+      width: calc(var(--nav-w) + env(safe-area-inset-left));
+      padding-left: env(safe-area-inset-left);
+      background: var(--bg);
+      border-right: 1px solid var(--border);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 20px; z-index: 200;
+    }
+    
+    .dock-item {
+      width: 44px; height: 44px; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; transition: all 0.2s;
+      color: var(--muted);
+    }
+    .dock-item.active { color: var(--accent); background: var(--accent-dim); }
+
+    /* ── SCREENS ── */
+    .screens-wrap { flex: 1; position: relative; overflow: hidden; }
+    .screen {
+      position: absolute; inset: 0;
+      overflow-y: auto; overflow-x: hidden;
+      display: none; -webkit-overflow-scrolling: touch;
+    }
+    .screen.active { display: block; }
+    .screen-inner {
+      min-height: 100%; padding: 20px 20px 60px;
+      display: flex; flex-direction: column; align-items: center;
+    }
+
+    /* สไตล์หัวข้อ COMMITMENT ตามที่คุณพีธต้องการ */
+    .section-label.prominent { 
+      color: var(--accent); 
+      letter-spacing: 0.3em; 
+      font-size: 0.8rem; 
+      font-weight: 900; 
+      margin-top: 10px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    /* Home Stats */
+    .home-stat { 
+      width: 100%; max-width: 480px; 
+      background: var(--card); border: 1px solid var(--border); 
+      border-radius: 28px; padding: 30px 20px; margin-bottom: 20px; 
+      display: flex; justify-content: space-around; align-items: center;
+    }
+    .stat-val { font-size: 2.8rem; font-weight: 800; letter-spacing: -0.05em; line-height: 1; }
+    .stat-val.small { font-size: 1.8rem; color: var(--muted); }
+    .stat-label { font-size: 0.6rem; color: var(--muted); text-transform: uppercase; margin-top: 10px; letter-spacing: 0.15em; font-weight: 700; }
+
+    /* Slider styling with Dots */
+    .slider-container { width: 100%; margin: 15px 0 30px; position: relative; }
+    input[type="range"] { -webkit-appearance: none; width: 100%; background: transparent; position: relative; z-index: 2; }
+    input[type="range"]::-webkit-slider-runnable-track { width: 100%; height: 4px; background: var(--muted2); border-radius: 2px; }
+    input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; height: 22px; width: 22px; border-radius: 50%; background: var(--accent); cursor: pointer; margin-top: -9px; box-shadow: 0 0 10px rgba(0,0,0,0.5); }
+    
+    .slider-labels { display: flex; justify-content: space-between; margin-top: 12px; padding: 0 4px; }
+    .slider-labels span { font-size: 0.65rem; color: var(--muted); font-weight: 700; position: relative; }
+    .slider-labels span::before { content: ''; position: absolute; top: -16px; left: 50%; transform: translateX(-50%); width: 2px; height: 6px; background: var(--muted2); border-radius: 1px; }
+
+    /* Other Components */
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: 24px; padding: 24px; width: 100%; max-width: 480px; margin-bottom: 12px; }
+    .btn { display: inline-flex; align-items: center; justify-content: center; padding: 16px 20px; font-size: 0.95rem; font-weight: 700; border-radius: 16px; border: none; cursor: pointer; transition: all 0.2s; }
+    .btn-primary { background: var(--accent); color: var(--bg); width: 100%; }
+    .btn-secondary { background: var(--bg3); color: var(--text); border: 1px solid var(--border); width: 100%; }
+    
+    input[type="number"], input[type="datetime-local"] { width: 100%; padding: 16px; background: var(--bg2); border: 1px solid var(--border); border-radius: 14px; color: var(--text); font-size: 1rem; margin-bottom: 15px; outline: none; }
+
+    .substance-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 20px; width: 100%; }
+    .sub-option { background: var(--bg2); border: 1px solid var(--border); border-radius: 18px; padding: 20px 10px; cursor: pointer; text-align: center; }
+    .sub-option.selected { border-color: var(--accent); background: var(--accent-dim); }
+
+    /* History Table View */
+    .history-tabs { display: flex; gap: 8px; margin-bottom: 20px; width: 100%; max-width: 480px; }
+    .tab-btn { padding: 10px 16px; background: var(--bg2); border: 1px solid var(--border); border-radius: 20px; font-size: 0.7rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+    .tab-btn.active { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+
+    .grid-view { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; margin-top: 15px; }
+    .grid-cell { aspect-ratio: 1; border-radius: 8px; background: var(--bg3); display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 700; color: var(--muted); }
+    .grid-cell.active { background: var(--accent-dim); color: var(--accent); border: 1px solid rgba(255,255,255,0.2); }
+    
+    .toast { position: fixed; bottom: 50px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--card2); border: 1px solid var(--border); border-radius: 14px; padding: 14px 24px; font-size: 0.9rem; font-weight: 700; z-index: 1000; opacity: 0; transition: all 0.3s ease; }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  </style>
+</head>
+<body>
+
+<div id="app">
+  <nav class="dock">
+    <div class="dock-item active" id="dockHome" onclick="switchTab('home')"><span class="icon">●</span></div>
+    <div class="dock-item" id="dockAdd" onclick="switchTab('add')"><span class="icon">＋</span></div>
+    <div class="dock-item" id="dockHistory" onclick="switchTab('history')"><span class="icon">■</span></div>
+    <div class="dock-item" id="dockData" onclick="switchTab('data')"><span class="icon">⚙</span></div>
+  </nav>
+
+  <div class="screens-wrap">
+    <div class="screen active" id="screenHome">
+      <div class="screen-inner">
+        <p class="section-label prominent">COMMITMENT</p>
+        <div class="home-stat">
+          <div style="text-align: center;">
+            <div class="stat-val" id="cleanDays">0</div>
+            <div class="stat-label">Current Streak</div>
+          </div>
+          <div style="width: 1px; height: 50px; background: var(--border);"></div>
+          <div style="text-align: center;">
+            <div class="stat-val small" id="bestStreak">0</div>
+            <div class="stat-label">Best Streak</div>
+          </div>
+        </div>
+        <div class="card" onclick="switchTab('add')" style="cursor: pointer; text-align: center; border-style: dashed; opacity: 0.5;">
+          <p style="font-weight: 700; color: var(--muted); font-size: 0.85rem;">+ NEXT LOG</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="screen" id="screenAdd">
+      <div class="screen-inner">
+        <p style="font-size: 1.2rem; font-weight: 800; width: 100%; max-width: 480px; margin-bottom: 20px;">New Entry</p>
+        <div id="step1" class="card">
+          <p class="section-label">Select Substance</p>
+          <div class="substance-grid" id="subGrid"></div>
+          <button class="btn btn-primary" onclick="nextStep(2)">NEXT</button>
+        </div>
+        <div id="step2" class="card" style="display: none;">
+          <p class="section-label" id="amountLabel">Amount</p>
+          <input type="number" id="inputAmount" placeholder="0.00" step="0.01">
+          <p class="section-label">Date & Time</p>
+          <input type="datetime-local" id="inputDate">
+          <p class="section-label">Craving Level</p>
+          <div class="slider-container">
+            <input type="range" id="inputCraving" min="0" max="10" value="5">
+            <div class="slider-labels">
+              <span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
+            </div>
+          </div>
+          <button class="btn btn-primary" onclick="saveEntry()">SAVE LOG</button>
+          <button class="btn btn-secondary" onclick="nextStep(1)" style="margin-top: 10px;">BACK</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="screen" id="screenHistory">
+      <div class="screen-inner">
+        <p style="font-size: 1.2rem; font-weight: 800; width: 100%; max-width: 480px; margin-bottom: 20px;">History</p>
+        <div class="history-tabs">
+          <div class="tab-btn active" id="tabList" onclick="setHistoryMode('list')">List</div>
+          <div class="tab-btn" id="tabWeek" onclick="setHistoryMode('week')">Week</div>
+          <div class="tab-btn" id="tabMonth" onclick="setHistoryMode('month')">Month</div>
+        </div>
+        <div id="historyContent" style="width: 100%;"></div>
+      </div>
+    </div>
+
+    <div class="screen" id="screenData">
+      <div class="screen-inner">
+        <p style="font-size: 1.2rem; font-weight: 800; width: 100%; max-width: 480px; margin-bottom: 20px;">Settings</p>
+        <div class="card">
+          <p class="section-label">Data Backup</p>
+          <button class="btn btn-secondary" onclick="exportData('json')" style="margin-bottom: 10px;">Export JSON</button>
+          <button class="btn btn-secondary" onclick="exportData('csv')">Export CSV</button>
+          <p class="section-label" style="margin-top: 25px;">App Management</p>
+          <button class="btn btn-secondary" onclick="clearAllData()" style="color: var(--danger); border-color: var(--danger);">Reset Data</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast">Saved Successfully</div>
+
+<script>
+  const SUBSTANCES = [
+    { id: 'meth', name: 'Meth', emoji: '💎', unit: 'g' },
+    { id: 'alc', name: 'Alcohol', emoji: '🍺', unit: 'ml' },
+    { id: 'can', name: 'Cannabis', emoji: '🌿', unit: 'g' },
+    { id: 'tob', name: 'Tobacco', emoji: '🚬', unit: 'sticks' },
+    { id: 'ket', name: 'Ketamine', emoji: '❄️', unit: 'g' },
+    { id: 'mdma', name: 'MDMA', emoji: '💊', unit: 'mg' },
+    { id: 'caf', name: 'Caffeine', emoji: '☕', unit: 'cups' }
+  ];
+
+  let logs = JSON.parse(localStorage.getItem('consciencia_logs') || '[]');
+  let selectedSub = null;
+  let historyMode = 'list';
+
+  function switchTab(tab) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById('screen' + tab.charAt(0).toUpperCase() + tab.slice(1)).classList.add('active');
+    document.querySelectorAll('.dock-item').forEach(d => d.classList.remove('active'));
+    document.getElementById('dock' + tab.charAt(0).toUpperCase() + tab.slice(1)).classList.add('active');
+    if (tab === 'history') renderHistory();
+    if (tab === 'home') updateHomeStat();
+    if (tab === 'add') resetAddFlow();
+  }
+
+  function initSubGrid() {
+    const grid = document.getElementById('subGrid');
+    grid.innerHTML = SUBSTANCES.map(s => `
+      <div class="sub-option" id="sub-${s.id}" onclick="selectSub('${s.id}')">
+        <div style="font-size: 1.8rem; margin-bottom: 8px;">${s.emoji}</div>
+        <div style="font-size: 0.8rem; font-weight: 700; color: var(--muted);">${s.name}</div>
+      </div>
+    `).join('');
+  }
+
+  function selectSub(id) {
+    selectedSub = SUBSTANCES.find(s => s.id === id);
+    document.querySelectorAll('.sub-option').forEach(opt => opt.classList.remove('selected'));
+    document.getElementById('sub-' + id).classList.add('selected');
+    document.getElementById('amountLabel').textContent = `Amount (${selectedSub.unit})`;
+  }
+
+  function nextStep(step) {
+    if (step === 2 && !selectedSub) { showToast('Please select an item'); return; }
+    document.getElementById('step1').style.display = step === 1 ? 'block' : 'none';
+    document.getElementById('step2').style.display = step === 2 ? 'block' : 'none';
+  }
+
+  function saveEntry() {
+    const amt = document.getElementById('inputAmount').value;
+    const crv = document.getElementById('inputCraving').value;
+    const dateVal = document.getElementById('inputDate').value;
+    if (!amt || amt <= 0) { showToast('Enter amount'); return; }
+    const entry = { id: Date.now(), subId: selectedSub.id, subName: selectedSub.name, emoji: selectedSub.emoji, amount: parseFloat(amt), unit: selectedSub.unit, craving: parseInt(crv), date: new Date(dateVal).toISOString() };
+    logs.push(entry);
+    logs.sort((a,b) => new Date(b.date) - new Date(a.date));
+    localStorage.setItem('consciencia_logs', JSON.stringify(logs));
+    showToast('Saved');
+    resetAddFlow();
+    switchTab('home');
+  }
+
+  function resetAddFlow() {
+    selectedSub = null;
+    document.getElementById('inputAmount').value = '';
+    const now = new Date();
+    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+    document.getElementById('inputDate').value = now.toISOString().slice(0,16);
+    nextStep(1);
+    initSubGrid();
+  }
+
+  function setHistoryMode(mode) {
+    historyMode = mode;
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('tab' + mode.charAt(0).toUpperCase() + mode.slice(1)).classList.add('active');
+    renderHistory();
+  }
+
+  function renderHistory() {
+    const content = document.getElementById('historyContent');
+    if (historyMode === 'list') {
+      if (logs.length === 0) { content.innerHTML = '<p style="text-align:center;color:var(--muted);margin-top:40px;">No logs.</p>'; return; }
+      content.innerHTML = logs.map(l => `
+        <div class="history-card">
+          <div class="h-title">${l.emoji} ${l.subName}</div>
+          <div class="h-meta">${new Date(l.date).toLocaleString('th-TH', { dateStyle: 'medium', timeStyle: 'short' })}</div>
+          <div class="h-amount">${l.amount} ${l.unit}</div>
+          <div class="h-delete" onclick="deleteEntry(${l.id})">DELETE</div>
+        </div>
+      `).join('');
+    } else {
+      const days = historyMode === 'week' ? 7 : 30;
+      const dateMap = {}; logs.forEach(l => { const d = l.date.split('T')[0]; dateMap[d] = (dateMap[d] || 0) + 1; });
+      let grid = `<div class="table-view"><div class="grid-view">`;
+      for (let i = days - 1; i >= 0; i--) {
+        const d = new Date(); d.setDate(d.getDate() - i);
+        const iso = d.toISOString().split('T')[0];
+        grid += `<div class="grid-cell ${dateMap[iso] ? 'active' : ''}">${d.getDate()}</div>`;
+      }
+      content.innerHTML = grid + `</div></div>`;
+    }
+  }
+
+  function deleteEntry(id) { if (confirm('Delete?')) { logs = logs.filter(l => l.id !== id); localStorage.setItem('consciencia_logs', JSON.stringify(logs)); renderHistory(); updateHomeStat(); } }
+
+  function updateHomeStat() {
+    const cleanDaysEl = document.getElementById('cleanDays');
+    const bestStreakEl = document.getElementById('bestStreak');
+    if (logs.length === 0) { cleanDaysEl.textContent = '0'; bestStreakEl.textContent = '0'; return; }
+    const current = Math.max(0, Math.floor((new Date() - new Date(logs[0].date)) / 864e5));
+    cleanDaysEl.textContent = current;
+    let max = current;
+    for(let i=0; i<logs.length-1; i++) { const gap = Math.floor((new Date(logs[i].date) - new Date(logs[i+1].date)) / 864e5); if(gap > max) max = gap; }
+    let stored = parseInt(localStorage.getItem('consciencia_best_streak') || '0');
+    if(max > stored) { stored = max; localStorage.setItem('consciencia_best_streak', stored); }
+    bestStreakEl.textContent = stored;
+  }
+
+  function showToast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2000); }
+
+  window.onload = () => { initSubGrid(); updateHomeStat(); };
+</script>
+</body>
+</html>
+
+```
