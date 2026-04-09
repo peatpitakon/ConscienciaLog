@@ -5,12 +5,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   
-  <!-- Apple PWA Meta Tags -->
+  <!-- Apple Full Screen Meta Tags -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Consciencia">
   
-  <title>SubstanceLog - Minimalist Pro</title>
+  <title>Consciencia Pro</title>
   
   <style>
     :root {
@@ -30,119 +30,59 @@
       --nav-w:      60px;
     }
 
-    * { 
-      margin: 0; padding: 0; box-sizing: border-box; 
-      -webkit-tap-highlight-color: transparent; 
-      -webkit-user-select: none; user-select: none;
-    }
-
-    input, textarea { -webkit-user-select: text; user-select: text; }
+    * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; -webkit-user-select:none; user-select:none; }
+    input, textarea { -webkit-user-select:text; user-select:text; }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100dvh;
-      overflow: hidden;
-      overscroll-behavior: none;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
+      background: var(--bg); color: var(--text); min-height: 100dvh; overflow: hidden; overscroll-behavior: none;
     }
 
-    #app {
-      display: flex;
-      height: 100dvh;
-      /* จัดการระยะห่างสำหรับ Standalone Mode */
-      padding-left: calc(var(--nav-w) + env(safe-area-inset-left));
-      padding-top: env(safe-area-inset-top);
-      padding-bottom: env(safe-area-inset-bottom);
-    }
+    #app { display: flex; height: 100dvh; padding-left: calc(var(--nav-w) + env(safe-area-inset-left)); padding-top: env(safe-area-inset-top); padding-bottom: env(safe-area-inset-bottom); }
 
-    /* ── DOCK ── */
-    nav.dock {
-      position: fixed; left: 0; top: 0; bottom: 0;
-      width: calc(var(--nav-w) + env(safe-area-inset-left));
-      padding-left: env(safe-area-inset-left);
-      background: var(--bg);
-      border-right: 1px solid var(--border);
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      gap: 20px; z-index: 200;
-    }
-    
-    .dock-item {
-      width: 44px; height: 44px; border-radius: 12px;
-      display: flex; align-items: center; justify-content: center;
-      cursor: pointer; transition: all 0.2s;
-      color: var(--muted);
-    }
+    /* DOCK */
+    nav.dock { position: fixed; left: 0; top: 0; bottom: 0; width: calc(var(--nav-w) + env(safe-area-inset-left)); padding-left: env(safe-area-inset-left); background: var(--bg); border-right: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px; z-index: 200; }
+    .dock-item { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; color: var(--muted); }
     .dock-item.active { color: var(--accent); background: var(--accent-dim); }
 
-    /* ── SCREENS ── */
+    /* SCREENS */
     .screens-wrap { flex: 1; position: relative; overflow: hidden; }
-    .screen {
-      position: absolute; inset: 0;
-      overflow-y: auto; overflow-x: hidden;
-      display: none; -webkit-overflow-scrolling: touch;
-    }
+    .screen { position: absolute; inset: 0; overflow-y: auto; overflow-x: hidden; display: none; -webkit-overflow-scrolling: touch; }
     .screen.active { display: block; }
-    .screen-inner {
-      min-height: 100%; padding: 20px 20px 60px;
-      display: flex; flex-direction: column; align-items: center;
-    }
+    .screen-inner { min-height: 100%; padding: 20px 20px 60px; display: flex; flex-direction: column; align-items: center; }
 
-    /* สไตล์หัวข้อ COMMITMENT ตามที่คุณพีธต้องการ */
-    .section-label.prominent { 
-      color: var(--accent); 
-      letter-spacing: 0.3em; 
-      font-size: 0.8rem; 
-      font-weight: 900; 
-      margin-top: 10px;
-      margin-bottom: 20px;
-      text-align: center;
-    }
-
-    /* Home Stats */
-    .home-stat { 
-      width: 100%; max-width: 480px; 
-      background: var(--card); border: 1px solid var(--border); 
-      border-radius: 28px; padding: 30px 20px; margin-bottom: 20px; 
-      display: flex; justify-content: space-around; align-items: center;
-    }
+    /* UI ELEMENTS */
+    .section-label.prominent { color: var(--accent); letter-spacing: 0.3em; font-size: 0.8rem; font-weight: 900; margin-top: 10px; margin-bottom: 20px; text-align: center; }
+    .home-stat { width: 100%; max-width: 480px; background: var(--card); border: 1px solid var(--border); border-radius: 28px; padding: 30px 20px; margin-bottom: 20px; display: flex; justify-content: space-around; align-items: center; }
     .stat-val { font-size: 2.8rem; font-weight: 800; letter-spacing: -0.05em; line-height: 1; }
     .stat-val.small { font-size: 1.8rem; color: var(--muted); }
     .stat-label { font-size: 0.6rem; color: var(--muted); text-transform: uppercase; margin-top: 10px; letter-spacing: 0.15em; font-weight: 700; }
-
-    /* Slider styling with Dots */
-    .slider-container { width: 100%; margin: 15px 0 30px; position: relative; }
-    input[type="range"] { -webkit-appearance: none; width: 100%; background: transparent; position: relative; z-index: 2; }
-    input[type="range"]::-webkit-slider-runnable-track { width: 100%; height: 4px; background: var(--muted2); border-radius: 2px; }
-    input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; height: 22px; width: 22px; border-radius: 50%; background: var(--accent); cursor: pointer; margin-top: -9px; box-shadow: 0 0 10px rgba(0,0,0,0.5); }
     
-    .slider-labels { display: flex; justify-content: space-between; margin-top: 12px; padding: 0 4px; }
-    .slider-labels span { font-size: 0.65rem; color: var(--muted); font-weight: 700; position: relative; }
-    .slider-labels span::before { content: ''; position: absolute; top: -16px; left: 50%; transform: translateX(-50%); width: 2px; height: 6px; background: var(--muted2); border-radius: 1px; }
-
-    /* Other Components */
     .card { background: var(--card); border: 1px solid var(--border); border-radius: 24px; padding: 24px; width: 100%; max-width: 480px; margin-bottom: 12px; }
-    .btn { display: inline-flex; align-items: center; justify-content: center; padding: 16px 20px; font-size: 0.95rem; font-weight: 700; border-radius: 16px; border: none; cursor: pointer; transition: all 0.2s; }
+    .btn { display: inline-flex; align-items: center; justify-content: center; padding: 16px 20px; font-size: 0.95rem; font-weight: 700; border-radius: 16px; border: none; cursor: pointer; transition: 0.2s; }
     .btn-primary { background: var(--accent); color: var(--bg); width: 100%; }
     .btn-secondary { background: var(--bg3); color: var(--text); border: 1px solid var(--border); width: 100%; }
+
+    input { width: 100%; padding: 16px; background: var(--bg2); border: 1px solid var(--border); border-radius: 14px; color: var(--text); font-size: 1rem; margin-bottom: 15px; outline: none; }
     
-    input[type="number"], input[type="datetime-local"] { width: 100%; padding: 16px; background: var(--bg2); border: 1px solid var(--border); border-radius: 14px; color: var(--text); font-size: 1rem; margin-bottom: 15px; outline: none; }
+    /* SLIDER */
+    .slider-container { width: 100%; margin: 15px 0 30px; }
+    input[type="range"] { -webkit-appearance: none; width: 100%; background: transparent; }
+    input[type="range"]::-webkit-slider-runnable-track { height: 4px; background: var(--muted2); border-radius: 2px; }
+    input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; height: 22px; width: 22px; border-radius: 50%; background: var(--accent); margin-top: -9px; }
+    .slider-labels { display: flex; justify-content: space-between; margin-top: 12px; }
+    .slider-labels span { font-size: 0.65rem; color: var(--muted); font-weight: 700; position: relative; }
+    .slider-labels span::before { content: ''; position: absolute; top: -16px; left: 50%; transform: translateX(-50%); width: 2px; height: 6px; background: var(--muted2); }
 
-    .substance-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 20px; width: 100%; }
-    .sub-option { background: var(--bg2); border: 1px solid var(--border); border-radius: 18px; padding: 20px 10px; cursor: pointer; text-align: center; }
-    .sub-option.selected { border-color: var(--accent); background: var(--accent-dim); }
-
-    /* History Table View */
+    /* TABLE VIEW */
     .history-tabs { display: flex; gap: 8px; margin-bottom: 20px; width: 100%; max-width: 480px; }
-    .tab-btn { padding: 10px 16px; background: var(--bg2); border: 1px solid var(--border); border-radius: 20px; font-size: 0.7rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
-    .tab-btn.active { background: var(--accent); color: var(--bg); border-color: var(--accent); }
-
+    .tab-btn { padding: 10px 16px; background: var(--bg2); border: 1px solid var(--border); border-radius: 20px; font-size: 0.7rem; font-weight: 700; color: var(--muted); }
+    .tab-btn.active { background: var(--accent); color: var(--bg); }
     .grid-view { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; margin-top: 15px; }
     .grid-cell { aspect-ratio: 1; border-radius: 8px; background: var(--bg3); display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 700; color: var(--muted); }
     .grid-cell.active { background: var(--accent-dim); color: var(--accent); border: 1px solid rgba(255,255,255,0.2); }
-    
-    .toast { position: fixed; bottom: 50px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--card2); border: 1px solid var(--border); border-radius: 14px; padding: 14px 24px; font-size: 0.9rem; font-weight: 700; z-index: 1000; opacity: 0; transition: all 0.3s ease; }
+
+    .toast { position: fixed; bottom: 50px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--card2); border: 1px solid var(--border); border-radius: 14px; padding: 14px 24px; font-size: 0.9rem; font-weight: 700; z-index: 1000; opacity: 0; transition: 0.3s; }
     .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
   </style>
 </head>
@@ -150,10 +90,10 @@
 
 <div id="app">
   <nav class="dock">
-    <div class="dock-item active" id="dockHome" onclick="switchTab('home')"><span class="icon">●</span></div>
-    <div class="dock-item" id="dockAdd" onclick="switchTab('add')"><span class="icon">＋</span></div>
-    <div class="dock-item" id="dockHistory" onclick="switchTab('history')"><span class="icon">■</span></div>
-    <div class="dock-item" id="dockData" onclick="switchTab('data')"><span class="icon">⚙</span></div>
+    <div class="dock-item active" id="dockHome" onclick="switchTab('home')">●</div>
+    <div class="dock-item" id="dockAdd" onclick="switchTab('add')">＋</div>
+    <div class="dock-item" id="dockHistory" onclick="switchTab('history')">■</div>
+    <div class="dock-item" id="dockData" onclick="switchTab('data')">⚙</div>
   </nav>
 
   <div class="screens-wrap">
@@ -182,20 +122,18 @@
         <p style="font-size: 1.2rem; font-weight: 800; width: 100%; max-width: 480px; margin-bottom: 20px;">New Entry</p>
         <div id="step1" class="card">
           <p class="section-label">Select Substance</p>
-          <div class="substance-grid" id="subGrid"></div>
+          <div id="subGrid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px;"></div>
           <button class="btn btn-primary" onclick="nextStep(2)">NEXT</button>
         </div>
         <div id="step2" class="card" style="display: none;">
           <p class="section-label" id="amountLabel">Amount</p>
-          <input type="number" id="inputAmount" placeholder="0.00" step="0.01">
+          <input type="number" id="inputAmount" placeholder="0.00" step="0.1">
           <p class="section-label">Date & Time</p>
           <input type="datetime-local" id="inputDate">
           <p class="section-label">Craving Level</p>
           <div class="slider-container">
             <input type="range" id="inputCraving" min="0" max="10" value="5">
-            <div class="slider-labels">
-              <span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
-            </div>
+            <div class="slider-labels"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span></div>
           </div>
           <button class="btn btn-primary" onclick="saveEntry()">SAVE LOG</button>
           <button class="btn btn-secondary" onclick="nextStep(1)" style="margin-top: 10px;">BACK</button>
@@ -219,18 +157,16 @@
       <div class="screen-inner">
         <p style="font-size: 1.2rem; font-weight: 800; width: 100%; max-width: 480px; margin-bottom: 20px;">Settings</p>
         <div class="card">
-          <p class="section-label">Data Backup</p>
           <button class="btn btn-secondary" onclick="exportData('json')" style="margin-bottom: 10px;">Export JSON</button>
           <button class="btn btn-secondary" onclick="exportData('csv')">Export CSV</button>
-          <p class="section-label" style="margin-top: 25px;">App Management</p>
-          <button class="btn btn-secondary" onclick="clearAllData()" style="color: var(--danger); border-color: var(--danger);">Reset Data</button>
+          <button class="btn btn-secondary" onclick="clearAllData()" style="color: var(--danger); border-color: var(--danger); margin-top: 20px;">Reset Data</button>
         </div>
       </div>
     </div>
   </div>
 </div>
 
-<div class="toast" id="toast">Saved Successfully</div>
+<div class="toast" id="toast">Saved!</div>
 
 <script>
   const SUBSTANCES = [
@@ -239,119 +175,99 @@
     { id: 'can', name: 'Cannabis', emoji: '🌿', unit: 'g' },
     { id: 'tob', name: 'Tobacco', emoji: '🚬', unit: 'sticks' },
     { id: 'ket', name: 'Ketamine', emoji: '❄️', unit: 'g' },
-    { id: 'mdma', name: 'MDMA', emoji: '💊', unit: 'mg' },
-    { id: 'caf', name: 'Caffeine', emoji: '☕', unit: 'cups' }
+    { id: 'mdma', name: 'MDMA', emoji: '💊', unit: 'mg' }
   ];
 
   let logs = JSON.parse(localStorage.getItem('consciencia_logs') || '[]');
   let selectedSub = null;
   let historyMode = 'list';
 
-  function switchTab(tab) {
-    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-    document.getElementById('screen' + tab.charAt(0).toUpperCase() + tab.slice(1)).classList.add('active');
-    document.querySelectorAll('.dock-item').forEach(d => d.classList.remove('active'));
-    document.getElementById('dock' + tab.charAt(0).toUpperCase() + tab.slice(1)).classList.add('active');
-    if (tab === 'history') renderHistory();
-    if (tab === 'home') updateHomeStat();
-    if (tab === 'add') resetAddFlow();
+  function switchTab(t) {
+    document.querySelectorAll('.screen, .dock-item').forEach(el => el.classList.remove('active'));
+    document.getElementById('screen' + t.charAt(0).toUpperCase() + t.slice(1)).classList.add('active');
+    document.getElementById('dock' + t.charAt(0).toUpperCase() + t.slice(1)).classList.add('active');
+    if (t === 'history') renderHistory();
+    if (t === 'home') updateHomeStat();
+    if (t === 'add') resetAddFlow();
   }
 
   function initSubGrid() {
-    const grid = document.getElementById('subGrid');
-    grid.innerHTML = SUBSTANCES.map(s => `
-      <div class="sub-option" id="sub-${s.id}" onclick="selectSub('${s.id}')">
-        <div style="font-size: 1.8rem; margin-bottom: 8px;">${s.emoji}</div>
-        <div style="font-size: 0.8rem; font-weight: 700; color: var(--muted);">${s.name}</div>
+    const g = document.getElementById('subGrid');
+    g.innerHTML = SUBSTANCES.map(s => `
+      <div class="card" id="sub-${s.id}" onclick="selectSub('${s.id}')" style="margin-bottom:0; text-align:center; padding:15px; background:var(--bg2); border-color:var(--border)">
+        <div style="font-size:1.5rem">${s.emoji}</div>
+        <div style="font-size:0.75rem; font-weight:700; color:var(--muted)">${s.name}</div>
       </div>
     `).join('');
   }
 
   function selectSub(id) {
     selectedSub = SUBSTANCES.find(s => s.id === id);
-    document.querySelectorAll('.sub-option').forEach(opt => opt.classList.remove('selected'));
-    document.getElementById('sub-' + id).classList.add('selected');
+    document.querySelectorAll('#subGrid .card').forEach(c => c.style.borderColor = 'var(--border)');
+    document.getElementById('sub-' + id).style.borderColor = 'var(--accent)';
     document.getElementById('amountLabel').textContent = `Amount (${selectedSub.unit})`;
   }
 
-  function nextStep(step) {
-    if (step === 2 && !selectedSub) { showToast('Please select an item'); return; }
-    document.getElementById('step1').style.display = step === 1 ? 'block' : 'none';
-    document.getElementById('step2').style.display = step === 2 ? 'block' : 'none';
+  function nextStep(s) {
+    if (s === 2 && !selectedSub) { showToast('Select one'); return; }
+    document.getElementById('step1').style.display = s === 1 ? 'block' : 'none';
+    document.getElementById('step2').style.display = s === 2 ? 'block' : 'none';
   }
 
   function saveEntry() {
     const amt = document.getElementById('inputAmount').value;
-    const crv = document.getElementById('inputCraving').value;
-    const dateVal = document.getElementById('inputDate').value;
-    if (!amt || amt <= 0) { showToast('Enter amount'); return; }
-    const entry = { id: Date.now(), subId: selectedSub.id, subName: selectedSub.name, emoji: selectedSub.emoji, amount: parseFloat(amt), unit: selectedSub.unit, craving: parseInt(crv), date: new Date(dateVal).toISOString() };
-    logs.push(entry);
+    const date = document.getElementById('inputDate').value;
+    if (!amt || !date) { showToast('Fill all info'); return; }
+    logs.push({ id: Date.now(), subId: selectedSub.id, subName: selectedSub.name, emoji: selectedSub.emoji, amount: parseFloat(amt), unit: selectedSub.unit, craving: parseInt(document.getElementById('inputCraving').value), date: new Date(date).toISOString() });
     logs.sort((a,b) => new Date(b.date) - new Date(a.date));
     localStorage.setItem('consciencia_logs', JSON.stringify(logs));
     showToast('Saved');
-    resetAddFlow();
     switchTab('home');
   }
 
   function resetAddFlow() {
-    selectedSub = null;
-    document.getElementById('inputAmount').value = '';
-    const now = new Date();
-    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+    selectedSub = null; document.getElementById('inputAmount').value = '';
+    const now = new Date(); now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
     document.getElementById('inputDate').value = now.toISOString().slice(0,16);
-    nextStep(1);
-    initSubGrid();
+    nextStep(1); initSubGrid();
   }
 
-  function setHistoryMode(mode) {
-    historyMode = mode;
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    document.getElementById('tab' + mode.charAt(0).toUpperCase() + mode.slice(1)).classList.add('active');
-    renderHistory();
-  }
+  function setHistoryMode(m) { historyMode = m; document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); document.getElementById('tab' + m.charAt(0).toUpperCase() + m.slice(1)).classList.add('active'); renderHistory(); }
 
   function renderHistory() {
-    const content = document.getElementById('historyContent');
+    const c = document.getElementById('historyContent');
     if (historyMode === 'list') {
-      if (logs.length === 0) { content.innerHTML = '<p style="text-align:center;color:var(--muted);margin-top:40px;">No logs.</p>'; return; }
-      content.innerHTML = logs.map(l => `
-        <div class="history-card">
-          <div class="h-title">${l.emoji} ${l.subName}</div>
-          <div class="h-meta">${new Date(l.date).toLocaleString('th-TH', { dateStyle: 'medium', timeStyle: 'short' })}</div>
-          <div class="h-amount">${l.amount} ${l.unit}</div>
-          <div class="h-delete" onclick="deleteEntry(${l.id})">DELETE</div>
-        </div>
-      `).join('');
+      c.innerHTML = logs.map(l => `<div class="card" style="position:relative">
+        <div style="font-weight:700">${l.emoji} ${l.subName}</div>
+        <div style="font-size:0.7rem; color:var(--muted)">${new Date(l.date).toLocaleString('th-TH')}</div>
+        <div style="position:absolute; top:24px; right:24px; font-weight:800">${l.amount} ${l.unit}</div>
+      </div>`).join('') || '<p style="text-align:center;color:var(--muted)">No data</p>';
     } else {
-      const days = historyMode === 'week' ? 7 : 30;
-      const dateMap = {}; logs.forEach(l => { const d = l.date.split('T')[0]; dateMap[d] = (dateMap[d] || 0) + 1; });
-      let grid = `<div class="table-view"><div class="grid-view">`;
-      for (let i = days - 1; i >= 0; i--) {
-        const d = new Date(); d.setDate(d.getDate() - i);
-        const iso = d.toISOString().split('T')[0];
-        grid += `<div class="grid-cell ${dateMap[iso] ? 'active' : ''}">${d.getDate()}</div>`;
+      const d = historyMode === 'week' ? 7 : 30;
+      const map = {}; logs.forEach(l => map[l.date.split('T')[0]] = true);
+      let g = '<div class="grid-view">';
+      for (let i = d - 1; i >= 0; i--) {
+        const t = new Date(); t.setDate(t.getDate() - i);
+        g += `<div class="grid-cell ${map[t.toISOString().split('T')[0]] ? 'active' : ''}">${t.getDate()}</div>`;
       }
-      content.innerHTML = grid + `</div></div>`;
+      c.innerHTML = g + '</div>';
     }
   }
 
-  function deleteEntry(id) { if (confirm('Delete?')) { logs = logs.filter(l => l.id !== id); localStorage.setItem('consciencia_logs', JSON.stringify(logs)); renderHistory(); updateHomeStat(); } }
-
   function updateHomeStat() {
-    const cleanDaysEl = document.getElementById('cleanDays');
-    const bestStreakEl = document.getElementById('bestStreak');
-    if (logs.length === 0) { cleanDaysEl.textContent = '0'; bestStreakEl.textContent = '0'; return; }
-    const current = Math.max(0, Math.floor((new Date() - new Date(logs[0].date)) / 864e5));
-    cleanDaysEl.textContent = current;
-    let max = current;
-    for(let i=0; i<logs.length-1; i++) { const gap = Math.floor((new Date(logs[i].date) - new Date(logs[i+1].date)) / 864e5); if(gap > max) max = gap; }
-    let stored = parseInt(localStorage.getItem('consciencia_best_streak') || '0');
-    if(max > stored) { stored = max; localStorage.setItem('consciencia_best_streak', stored); }
-    bestStreakEl.textContent = stored;
+    const cd = document.getElementById('cleanDays'), bs = document.getElementById('bestStreak');
+    if (!logs.length) { cd.textContent = bs.textContent = '0'; return; }
+    const curr = Math.max(0, Math.floor((new Date() - new Date(logs[0].date)) / 864e5));
+    cd.textContent = curr;
+    let max = curr; for(let i=0; i<logs.length-1; i++) { const g = Math.floor((new Date(logs[i].date) - new Date(logs[i+1].date)) / 864e5); if(gap > max) max = gap; }
+    let stored = parseInt(localStorage.getItem('consc_best') || '0');
+    if(max > stored) { stored = max; localStorage.setItem('consc_best', stored); }
+    bs.textContent = stored;
   }
 
-  function showToast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2000); }
+  function showToast(m) { const t = document.getElementById('toast'); t.textContent = m; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2000); }
+  function exportData(t) { const b = new Blob([JSON.stringify(logs)], {type:'text/plain'}); const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = 'backup.json'; a.click(); }
+  function clearAllData() { if(confirm('Reset all?')) { localStorage.clear(); logs = []; switchTab('home'); } }
 
   window.onload = () => { initSubGrid(); updateHomeStat(); };
 </script>
